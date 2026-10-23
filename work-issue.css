@@ -1,0 +1,117 @@
+/* Work page: "The Issue". A cover story, then every film as a fitted title.
+   Titles carry their film's colours; pointing at one floods the page with the film. */
+.issue {
+  --fs-s: clamp(15px, 0.1vw + 13.4px, 16px);   /* credits */
+  --fs-l: clamp(19px, 0.55vw + 13px, 25px);    /* standfirst */
+}
+body.on-issue main, body.on-issue .foot { mix-blend-mode: difference; }
+
+/* The flood: a film behind the whole page */
+.flood { position: fixed; inset: 0; z-index: -1; background: var(--ink); opacity: 0; pointer-events: none; transition: opacity .14s linear; }
+.flood img, .flood video { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; }
+.flood video { opacity: 0; }
+.flood video.is-live { opacity: 1; }
+body.is-flooding .flood { opacity: 1; }
+
+/* Fitted type: JS sets each line's font-size to fill a chosen share of the measure */
+.issue .fit { position: relative; white-space: nowrap; }
+.issue .bl { display: inline-block; width: 0; height: 0; vertical-align: baseline; }
+
+/* Cover story */
+.issue .cover { padding: clamp(92px, 8.5vw, 150px) var(--g) 0; transition: opacity .14s linear; }
+.issue .cover-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; font-size: var(--fs-s); font-stretch: 80%; line-height: 1.3; margin-bottom: clamp(8px, .9vw, 16px); }
+.issue .cover-top p:last-child { text-align: right; }
+.issue .cover-head { position: relative; }
+.issue .cover-title { font-family: var(--display); font-weight: 900; text-transform: uppercase; line-height: .8; font-size: clamp(64px, 26vw, 480px); }
+.issue .cover-title a { display: block; }
+.issue .cover-title a:hover { text-decoration: none; }
+.issue .cover-title .ln { display: flex; }
+.issue .cover-title .ln2 { justify-content: flex-end; margin-top: .02em; }
+.issue .standfirst { font-size: var(--fs-l); line-height: 1.3; max-width: 36ch; margin-top: 22px; }
+.issue .cover-head.is-set .standfirst { position: absolute; left: 0; bottom: calc(var(--pad, 0px) - .33em); width: var(--sw, 30%); max-width: none; margin: 0; }
+.issue .cover-body {
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--g);
+  margin-top: clamp(44px, 5.5vw, 104px); border-top: 1px solid var(--paper); padding-top: clamp(14px, 1.2vw, 22px);
+}
+.issue .cover-story { grid-column: 1 / span 5; display: grid; gap: 1em; align-content: start; max-width: 50ch; }
+.issue .ul { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.issue .ul:hover { text-decoration-thickness: 3px; }
+.issue .cover-press { grid-column: 7 / -1; }
+.issue .press-h { font-weight: 500; font-size: var(--fs-s); font-stretch: 80%; line-height: 1.3; margin-bottom: .9em; }
+.issue .press { display: block; }
+.issue .press li + li { margin-top: .1em; }
+.issue .press a { font-family: var(--display); font-weight: 800; text-transform: uppercase; font-size: clamp(36px, 3.7vw, 70px); line-height: .9; text-decoration: none; }
+.issue .press .d { font-family: var(--text); font-weight: 400; text-transform: none; font-size: var(--fs-s); font-stretch: 80%; line-height: 1; margin-left: .7em; white-space: nowrap; }
+.issue .press a .n { transition: opacity .12s linear; }
+.issue .press a:hover .n, .issue .press a:focus-visible .n { opacity: .5; }
+
+/* The index */
+.issue .index { padding: clamp(96px, 10vw, 190px) var(--g) clamp(80px, 9vw, 160px); }
+.issue .row { transition: opacity .14s linear; }
+.issue .row + .row { margin-top: clamp(2px, .35vw, 7px); }
+.issue .row-a { display: flex; align-items: flex-end; gap: clamp(14px, 1.3vw, 24px); }
+.issue .row-a:hover { text-decoration: none; }
+.issue .row[data-side="R"] .row-a { flex-direction: row-reverse; }
+.issue .row .t { flex: none; font-family: var(--display); font-weight: 900; text-transform: uppercase; line-height: .8; font-size: clamp(44px, 9vw, 180px); }
+.issue .row .cr { flex: 1 1 0; min-width: 0; margin-bottom: calc(var(--pad, 0px) - .32em); font-size: var(--fs-s); font-stretch: 80%; line-height: 1.25; }
+.issue .row .cr span { display: block; }
+.issue .row[data-side="R"] .cr { text-align: right; }
+.issue .row.is-stack .row-a { flex-direction: column; align-items: flex-start; gap: 6px; }
+.issue .row.is-stack[data-side="R"] .row-a { align-items: flex-end; }
+.issue .row.is-stack .cr { margin-bottom: 0; flex: none; }
+
+/* Film colours in the titles, drifting slowly. No underlines on big titles: they cut the line below. */
+.issue .row .t[style*="--grad"], .issue .cover-title .fit[style*="--grad"] {
+  background-image: var(--grad); background-size: 260% 100%; background-position: 0% 50%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: issue-drift 22s ease-in-out infinite alternate;
+}
+@keyframes issue-drift { to { background-position: 100% 50%; } }
+body.is-flooding .issue .row .t,
+.issue .cover-title a:hover .fit, .issue .cover-title a:focus-visible .fit { background-image: none; color: var(--paper); animation: none; }
+
+body.is-flooding .issue .cover, body.is-flooding .issue .row { opacity: .14; }
+body.is-flooding .issue .row.is-on, body.flood-cover .issue .cover { opacity: 1; }
+body.flood-cover .issue .cover-title .fit { background-image: none; color: var(--paper); animation: none; }
+
+/* Touch: inline player under the tapped title */
+.issue .player { margin: 12px 0 26px; }
+.issue .player video { width: min(100%, calc(76svh * var(--ar))); aspect-ratio: var(--ar); background: var(--ink); object-fit: contain; }
+.issue .row[data-side="R"] .player video { margin-left: auto; }
+.issue .player-line { display: flex; justify-content: space-between; gap: 16px; margin-top: 10px; font-size: var(--fs-s); }
+.issue .player-line a, .issue .player-line button { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+
+@media (max-width: 899px) {
+  .issue .cover-body { grid-template-columns: 1fr; row-gap: 56px; }
+  .issue .cover-story, .issue .cover-press { grid-column: 1 / -1; }
+  .issue .row + .row { margin-top: 18px; }
+  .issue .row .cr span { display: inline; }
+  .issue .row .cr span + span::before { content: ", "; }
+}
+@media (max-width: 560px) {
+  .issue .press .d { display: block; margin: 4px 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flood, .issue .cover, .issue .row { transition: none; }
+  .issue .row .t[style*="--grad"], .issue .cover-title .fit[style*="--grad"] { animation: none; }
+}
+
+/* Story and press as dropdowns on phones; always open on bigger screens */
+.issue details.dd > summary { list-style: none; cursor: pointer; }
+.issue details.dd > summary::-webkit-details-marker { display: none; }
+.issue .cover-story { display: block; }
+.issue .cover-story > p + p { margin-top: 1em; }
+@media (min-width: 561px) {
+  .issue .cover-story > summary { display: none; }
+  .issue .cover-press > summary { pointer-events: none; }
+}
+@media (max-width: 560px) {
+  .issue details.dd { border-top: 1px solid currentColor; }
+  .issue details.dd:last-of-type { border-bottom: 1px solid currentColor; }
+  .issue details.dd > summary { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0; margin: 0; font-family: var(--display); font-weight: 800; text-transform: uppercase; font-size: 22px; line-height: 1; font-stretch: normal; }
+  .issue details.dd > summary::after { content: "+"; font-weight: 400; }
+  .issue details.dd[open] > summary::after { content: "\2212"; }
+  .issue details.dd[open] { padding-bottom: 18px; }
+  .issue .cover-body { gap: 0 !important; }
+  .issue .row-a { -webkit-tap-highlight-color: transparent; }
+}
