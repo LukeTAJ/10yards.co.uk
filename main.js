@@ -119,7 +119,6 @@
           <dt>Type</dt><dd>${esc(w.type)}</dd>
           <dt>Format</dt><dd>${esc(w.format)}</dd>
           ${w.runtime ? `<dt>Runtime</dt><dd>${rt(w.runtime)}</dd>` : ""}
-          <dt>Studio</dt><dd>10Yards</dd>
         </dl>
         <div class="copy">
           ${(w.lines || []).map((l) => `<p>${esc(l)}</p>`).join("") || "<p>Written up soon.</p>"}
